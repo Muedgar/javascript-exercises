@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            display: grid;
+            place-items: center;
+        }
+
+        #canv {
+            position: absolute;
+            top: 10%;
+            border: .1vmin solid;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canv"></canvas>
+    <script>
+        const canvas = document.getElementById("canv");
+        const ctx = canvas.getContext("2d");
+
+        const CELL_SIZE = 30;
+        const GRID_SIZE = 20;
+
+        canvas.width = CELL_SIZE * GRID_SIZE;
+        canvas.height = CELL_SIZE * GRID_SIZE;
+
+        // direction
+        let direction = 'RIGHT';
+
+        // drawings
+        let snake = [{ x: 5, y: 10 }];
+        let food = { x: 15, y: 10 };
+
+        // DRAWING FUNCTIONS
+        function drawGrid() {
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 0.5;
+
+            for (let i = 0; i <= GRID_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * CELL_SIZE, 0);
+                ctx.lineTo(i * CELL_SIZE, canvas.height);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, i * CELL_SIZE);
+                ctx.lineTo(canvas.width, i * CELL_SIZE);
+                ctx.stroke();
+            }
+        }
+
+        function drawSnake() {
+            for (let i = 0; i < snake.length; i++) {
+                const segment = snake[i];
+                const x = segment.x * CELL_SIZE;
+                const y = segment.y * CELL_SIZE;
+                const isHead = i === 0;
+
+                const gradient = ctx.createLinearGradient(
+                    x, y,
+                    x + CELL_SIZE, y + CELL_SIZE
+                );
+
+                if (isHead) {
+                    gradient.addColorStop(0, '#4caf50');
+                    gradient.addColorStop(1, '#2e7d32');
+                } else {
+                    gradient.addColorStop(0, '#388e3c');
+                    gradient.addColorStop(1, '#1b5e20');
+                }
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.fillRect(x + 5, y + 5, CELL_SIZE - 11, 2);
+                ctx.fillRect(x + 5, y + CELL_SIZE - 8, CELL_SIZE - 11, 2);
+
+                if (isHead) {
+                    ctx.fillStyle = 'white';
+
+                    const eyeSize = 4;
+                    const eyeOffset = 6;
+
+                    if (direction === 'RIGHT') {
+                        ctx.fillRect(x + CELL_SIZE - eyeOffset, y + 5, eyeSize, eyeSize);
+                        ctx.fillRect(x + CELL_SIZE - eyeOffset, y + CELL_SIZE - 9, eyeSize, eyeSize);
+                    } else if (direction === 'LEFT') {
+                        ctx.fillRect(x + eyeOffset - eyeSize, y + 5, eyeSize, eyeSize);
+                        ctx.fillRect(x + eyeOffset - eyeSize, y + CELL_SIZE - 9, eyeSize, eyeSize);
+                    } else if (direction === 'UP') {
+                        ctx.fillRect(x + 5, y + eyeOffset - eyeSize, eyeSize, eyeSize);
+                        ctx.fillRect(x + CELL_SIZE - 9, y + eyeOffset - eyeSize, eyeSize, eyeSize);
+                    } else {
+                        ctx.fillRect(x + 5, y + CELL_SIZE - eyeOffset, eyeSize, eyeSize);
+                        ctx.fillRect(x + CELL_SIZE - 9, y + CELL_SIZE - eyeOffset, eyeSize, eyeSize);
+                    }
+
+                    ctx.fillStyle = 'black';
+
+                    if (direction === 'RIGHT') {
+                        ctx.fillRect(x + CELL_SIZE - eyeOffset + 1, y + 6, 2, 2);
+                        ctx.fillRect(x + CELL_SIZE - eyeOffset + 1, y + CELL_SIZE - 8, 2, 2);
+                    } else if (direction === 'LEFT') {
+                        ctx.fillRect(x + eyeOffset - eyeSize + 1, y + 6, 2, 2);
+                        ctx.fillRect(x + eyeOffset - eyeSize + 1, y + CELL_SIZE - 8, 2, 2);
+                    } else if (direction === 'UP') {
+                        ctx.fillRect(x + 6, y + eyeOffset - eyeSize + 1, 2, 2);
+                        ctx.fillRect(x + CELL_SIZE - 8, y + eyeOffset - eyeSize + 1, 2, 2);
+                    } else {
+                        ctx.fillRect(x + 6, y + CELL_SIZE - eyeOffset + 1, 2, 2);
+                        ctx.fillRect(x + CELL_SIZE - 8, y + CELL_SIZE - eyeOffset + 1, 2, 2);
+                    }
+                }
+            }
+        }
+
+        function drawFood() {
+            const x = food.x * CELL_SIZE;
+            const y = food.y * CELL_SIZE;
+
+            ctx.save();
+        }
+        
+        // ANIMATION FUNCTIONS
+
+        drawGrid();
+        drawSnake();
+    </script>
+</body>
+</html>

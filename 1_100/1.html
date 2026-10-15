@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Animation</title>
+</head>
+<body>
+    <canvas id="canv"></canvas>
+
+    <script>
+        const canvas = document.getElementById("canv");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const context = canvas.getContext("2d");
+
+        context.fillStyle = "black";
+
+        const radius = 50;
+
+        let x = radius;
+        let speed = 10;
+
+        function draw(x) {
+            context.beginPath();
+            context.arc(x, 100, radius, 0, 2 * Math.PI);
+            context.fill();
+            context.closePath();
+        }
+
+        function animate() {
+            context.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            x += speed;
+
+            // Right wall
+            if (x + radius >= canvas.width) {
+                speed = -speed;
+            }
+
+            // Left wall
+            if (x - radius <= 0) {
+                speed = speed;
+            }
+
+            draw(x);
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
