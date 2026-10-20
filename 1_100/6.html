@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: lightblue;
+            display: grid;
+            place-items: center;
+        }
+
+        #canv {
+            position: absolute;
+            top: 300px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canv"></canvas>
+    <script>
+        const canvas = document.getElementById("canv");
+        const context = canvas.getContext("2d");
+
+        const CELL_SIZE = 25;
+        const GRID_SIZE = 20;
+
+        canvas.width = GRID_SIZE * CELL_SIZE;
+        canvas.height = GRID_SIZE * CELL_SIZE;
+
+        let direction = 'RIGHT';
+        let gameInterval = null;
+
+        let food = {
+            x: 2,
+            y: 2
+        }
+
+        let snake = [
+            { x: 5, y: 10 },
+            { x: 4, y: 10 },
+            { x: 3, y: 10 }
+        ]
+
+        function drawGrid() {
+            context.fillStyle = '#eee'
+            for (let i = 0; i<GRID_SIZE; i++) {
+                for (let j=0; j<GRID_SIZE; j++) {
+                const x = j * CELL_SIZE;
+                const y = i * CELL_SIZE;
+                    context.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE -1);
+                }
+            }
+        }
+
+        function drawFood() {
+            const x = food.x;
+            const y = food.y;
+            context.fillStyle = 'red';
+            context.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1)
+        }
+
+        function drawSnake() {
+            for (let i = 0; i<snake.length; i++) {
+                const x = snake[i].x * CELL_SIZE;
+                const y = snake[i].y * CELL_SIZE;
+
+                if (i === 0) {
+                    context.fillStyle = 'lightgreen';
+                    context.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                } else {
+                    context.fillStyle = 'green';
+                    context.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                }
+            }
+        }
+
+        function moveSnake() {
+            const head = {...snake[0]}
+            switch (direction) {
+                case 'UP':
+                    head.y -= 1
+                    break;
+
+                case 'RIGHT':
+                    head.x += 1
+                    break;
+
+                case 'DOWN':
+                    head.y += 1
+                    break;
+
+                case 'LEFT':
+                    head.x -= 1
+                    break;
+            
+                default:
+                    break;
+            }
+            snake.unshift(head);
+            snake.pop();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowUp':
+                    direction = 'UP'
+                    break;
+
+                case 'ArrowRight':
+                    direction = 'RIGHT'
+                    break;
+
+                case 'ArrowDown':
+                    direction = 'DOWN'
+                    break;
+
+                case 'ArrowLeft':
+                    direction = 'LEFT'
+                    break;
+            
+                default:
+                    break;
+            }
+        })
+
+        function gameLoop() {
+            if (gameInterval !== null) return 
+            gameInterval = setInterval(() => {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                drawGrid()
+                drawFood()
+                drawSnake()
+
+                moveSnake();
+            }, 100);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
